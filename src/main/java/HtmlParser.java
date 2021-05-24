@@ -1,13 +1,41 @@
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class HtmlParser {
+
+    private static Logger LOGGER;
+
+   /* static {
+        try (FileInputStream inputStream = new FileInputStream("/logging.properties")) {
+            LogManager.getLogManager().readConfiguration(inputStream);
+            LOGGER = Logger.getLogger(HtmlParser.class.getName());
+        } catch (FileNotFoundException exception) {
+            exception.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }*/
+
+    static {
+        try {
+            LogManager.getLogManager().readConfiguration(
+                    HtmlParser.class.getResourceAsStream("/logging.properties")
+            );
+            LOGGER = Logger.getLogger(HtmlParser.class.getName());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 
     public static int findRecord(ArrayList<Record> records, String word)
     {
@@ -30,63 +58,44 @@ public class HtmlParser {
         {
             if (isDelimiterFirst)
             {
-                splitPattern = splitPattern + delimiter;
+                splitPattern = splitPattern.concat(delimiter);
                 isDelimiterFirst = false;
             }
             else
-                splitPattern = splitPattern + "|\\" + delimiter;
+                splitPattern = splitPattern.concat("|\\" + delimiter);
         }
         System.out.println(splitPattern);
 
-        /*
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter web-page address:");
         String url = scanner.nextLine();
-
+        Document htmlDocument;
         try {
-            Document document = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
-        }
-        catch (IOException exception) {
-            exception.printStackTrace();
-        }
-         */
-        String HTMLString = "<!DOCTYPE html>"
-                + "<html>"
-                + "<head>"
-                + "<title>JSoup Example</title>"
-                + "</head>"
-                + "<body>"
-                + "<table><tr><td><h1>HelloWorld text text</h1></tr>"
-                + "</table>"
-                + "<p>some text idk</p>"
-                + "<div><p>more text</p>"
-                + "<div><p>and more and more</p></div>"
-                + "</div>"
-                + "<a href=\"URL\">текст ссылки</a>"
-                + "<button name=\"nada\">button</button>"
-                + "</body>"
-                + "</html>";
-
-        ArrayList<Record> records = new ArrayList<Record>();
-
-        Document htmlDocument = Jsoup.parse(HTMLString);
-        Elements elements = htmlDocument.getAllElements();
-        String[] words;
-        for (Element element : elements)
-        {
-            if (element.childNodeSize() == 1 && !element.siblingElements().isEmpty()) {
-                System.out.println(element.text());
-                words = element.text().split(splitPattern);
-                for (String word : words) {
-                    if (findRecord(records, word) == 0)
-                        records.add(new Record(word));
-                    else
-                        records.get(findRecord(records, word)).incrementCounter();
+            htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
+            ArrayList<Record> records = new ArrayList<Record>();
+            Elements elements = htmlDocument.getAllElements();
+            String[] words;
+            for (Element element : elements) {
+                if (element.childNodeSize() == 1 && !element.siblingElements().isEmpty()) {
+                    words = element.text().split(splitPattern);
+                    for (String word : words) {
+                        word = word.toUpperCase();
+                        if (findRecord(records, word) == 0)
+                            records.add(new Record(word));
+                        else
+                            records.get(findRecord(records, word)).incrementCounter();
+                    }
                 }
             }
+            for (Record record : records)
+                System.out.println(record);
         }
-        for (Record record : records)
-            System.out.println(record);
+        catch (IOException exception) {
+            LOGGER.log(Level.WARNING, "IOException occurred", exception);
+        }
+        catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Exception occurred", exception);
+        }
     }
 }
