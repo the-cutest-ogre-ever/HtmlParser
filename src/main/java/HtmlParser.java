@@ -2,9 +2,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
@@ -14,34 +11,24 @@ import java.util.logging.Logger;
 public class HtmlParser {
 
     private static Logger LOGGER;
-
-   /* static {
-        try (FileInputStream inputStream = new FileInputStream("/logging.properties")) {
-            LogManager.getLogManager().readConfiguration(inputStream);
-            LOGGER = Logger.getLogger(HtmlParser.class.getName());
-        } catch (FileNotFoundException exception) {
-            exception.printStackTrace();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-    }*/
+    private static Scanner SCANNER;
 
     static {
         try {
             LogManager.getLogManager().readConfiguration(
-                    HtmlParser.class.getResourceAsStream("/logging.properties")
-            );
+                    HtmlParser.class.getResourceAsStream("/logging.properties"));
             LOGGER = Logger.getLogger(HtmlParser.class.getName());
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+
+        SCANNER = new Scanner(System.in);
     }
 
-    public static int findRecord(ArrayList<Record> records, String word)
-    {
+    private static int findRecord(ArrayList<Record> records, String word) {
         int index = 0;
-        for (Record record : records)
-        {
+
+        for (Record record : records) {
             if (record.equals(word))
                 return index;
             index++;
@@ -49,33 +36,46 @@ public class HtmlParser {
         return 0;
     }
 
-    public static void main(String[] args) {
+    private static String getUrl(String[] args) {
+        String url;
 
-        boolean isDelimiterFirst = true;
+        if (args.length == 1)
+            url = args[0];
+        else {
+            System.out.println("Enter web-page address:");
+            url = SCANNER.nextLine();
+        }
+        return url;
+    }
+
+    private static String getSplitPattern() {
         List <String> delimiters = Arrays.asList(" ", ",", ".", "! ", "?", "\"", ":", ";", "[", "]", "(", ")", "\n", "\r", "\t");
         String splitPattern = "";
-        for (String delimiter : delimiters)
-        {
-            if (isDelimiterFirst)
-            {
+        boolean isDelimiterFirst = true;
+
+        System.out.println("Current delimiters: " + delimiters);
+        for (String delimiter : delimiters) {
+            if (isDelimiterFirst) {
                 splitPattern = splitPattern.concat(delimiter);
                 isDelimiterFirst = false;
-            }
-            else
+            } else
                 splitPattern = splitPattern.concat("|\\" + delimiter);
         }
-        System.out.println(splitPattern);
+        return splitPattern;
+    }
 
-        Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+        String url = getUrl(args);
 
-        System.out.println("Enter web-page address:");
-        String url = scanner.nextLine();
         Document htmlDocument;
+        String splitPattern = getSplitPattern();
+
         try {
-            htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
             ArrayList<Record> records = new ArrayList<Record>();
-            Elements elements = htmlDocument.getAllElements();
             String[] words;
+            htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
+            Elements elements = htmlDocument.getAllElements();
+
             for (Element element : elements) {
                 if (element.childNodeSize() == 1 && !element.siblingElements().isEmpty()) {
                     words = element.text().split(splitPattern);
