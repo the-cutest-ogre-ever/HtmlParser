@@ -1,7 +1,7 @@
 public class Record {
 
-    public String word;
-    public int counter;
+    private String word;
+    private int counter;
 
     public Record(String word) {
         this.word = word;
@@ -16,6 +16,18 @@ public class Record {
         if (this.word.equals(newWord))
             return true;
         return false;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
     }
 
     @Override
