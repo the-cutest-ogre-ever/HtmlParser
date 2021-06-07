@@ -1,0 +1,14 @@
+Jun 02, 2021 4:25:09 PM HtmlParser main
+WARNING: Exception occurred
+java.lang.IllegalArgumentException: Malformed URL: f
+	at org.jsoup.helper.HttpConnection.url(HttpConnection.java:131)
+	at org.jsoup.helper.HttpConnection.connect(HttpConnection.java:70)
+	at org.jsoup.Jsoup.connect(Jsoup.java:73)
+	at HtmlParser.main(HtmlParser.java:78)
+Caused by: java.net.MalformedURLException: no protocol: f
+	at java.net.URL.<init>(URL.java:611)
+	at java.net.URL.<init>(URL.java:508)
+	at java.net.URL.<init>(URL.java:457)
+	at org.jsoup.helper.HttpConnection.url(HttpConnection.java:129)
+	... 3 more
+

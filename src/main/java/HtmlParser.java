@@ -7,8 +7,15 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.sql.*;
 
 public class HtmlParser {
+
+    private static final String JDBC_DRIVER = "org.postgresql.Driver";
+    private static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/parser";
+
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "shrekislove";
 
     private static Logger LOGGER;
     private static Scanner SCANNER;
@@ -64,10 +71,34 @@ public class HtmlParser {
         return splitPattern;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException{
+        //begin work with jdbc
+        Connection connection = null;
+        Statement statement = null;
+
+        Class.forName("org.postgresql.Driver");
+
+        connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+        statement = connection.createStatement();
+
+        String sql = "SELECT * FROM recors";
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            String word = resultSet.getString("word");
+            int counter = resultSet.getInt("counter");
+
+            System.out.println("SQL RESULT:\n");
+            System.out.println(word + " " + counter);
+        }
+
+        resultSet.close();
+        statement.close();
+        connection.close();
+
         String url = getUrl(args);
 
-        Document htmlDocument;
+        Document htmlDocument = null;
         String splitPattern = getSplitPattern();
 
         try {
