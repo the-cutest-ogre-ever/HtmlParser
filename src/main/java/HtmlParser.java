@@ -17,6 +17,9 @@ public class HtmlParser {
     private static final String USER = "postgres";
     private static final String PASSWORD = "shrekislove";
 
+    private static Connection connection;
+    private static Statement statement;
+
     private static Logger LOGGER;
     private static Scanner SCANNER;
 
@@ -28,7 +31,9 @@ public class HtmlParser {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
 
+    static {
         SCANNER = new Scanner(System.in);
     }
 
@@ -71,30 +76,94 @@ public class HtmlParser {
         return splitPattern;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException{
-        //begin work with jdbc
-        Connection connection = null;
-        Statement statement = null;
+    private static void connectDatabase() {
+        try {
+            Class.forName("org.postgresql.Driver");
 
-        Class.forName("org.postgresql.Driver");
+            connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+            statement = connection.createStatement();
+        }
+        catch (ClassNotFoundException exception) {
+            LOGGER.log(Level.WARNING, "ClassNotFoundException occurred", exception);
+        }
+        catch (SQLException exception) {
+            LOGGER.log(Level.WARNING, "SQLException occurred", exception);
+        }
+        catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Exception occurred", exception);
+        }
+    }
 
-        connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-        statement = connection.createStatement();
+    private static void setUpDataTable() {
+        connectDatabase();
 
-        String sql = "SELECT * FROM recors";
-        ResultSet resultSet = statement.executeQuery(sql);
+        String sqlRequest = "CREATE TABLE records (" +
+                "               word VARCHAR(100) NOT NULL," +
+                "               counter INT NOT NULL," +
+                "               PRIMARY KEY (word)" +
+                "            );";
+        try  {
+            statement.execute(sqlRequest);
+        }
+        catch (SQLException exception) {
+            LOGGER.log(Level.WARNING, "SQLException occurred", exception);
+        }
+        catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Exception occurred", exception);
+        }
+    }
 
-        while (resultSet.next()) {
-            String word = resultSet.getString("word");
-            int counter = resultSet.getInt("counter");
+    private static void closeDatabaseConnection() {
+        String sqlRequest = "DROP TABLE records;";
+        try  {
+            statement.execute(sqlRequest);
 
-            System.out.println("SQL RESULT:\n");
-            System.out.println(word + " " + counter);
+            statement.close();
+            connection.close();
+        }
+        catch (SQLException exception) {
+            LOGGER.log(Level.WARNING, "SQLException occurred", exception);
+        }
+        catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Exception occurred", exception);
+        }
+    }
+
+    private static void doSomeStuff() {
+        ResultSet resultSet;
+        String sql1 = "INSERT INTO records (word, counter) VALUES ('word', '100');";
+        String sql2 = "INSERT INTO records (word, counter) VALUES ('word2', '1002');";
+        String sql3 = "SELECT * FROM records";
+
+        try {
+            resultSet = statement.executeQuery(sql1);
+            resultSet = statement.executeQuery(sql2);
+            resultSet = statement.executeQuery(sql3);
+
+            System.out.println("SQL RESULT:");
+            while (resultSet.next()) {
+                String word = resultSet.getString("word");
+                int counter = resultSet.getInt("counter");
+
+                System.out.println(word + " " + counter);
+            }
+
+            resultSet.close();
+        }
+        catch (SQLException exception) {
+            LOGGER.log(Level.WARNING, "SQLException occurred", exception);
+        }
+        catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Exception occurred", exception);
         }
 
-        resultSet.close();
-        statement.close();
-        connection.close();
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException{
+
+        setUpDataTable();
+        doSomeStuff();
+        closeDatabaseConnection();
 
         String url = getUrl(args);
 
