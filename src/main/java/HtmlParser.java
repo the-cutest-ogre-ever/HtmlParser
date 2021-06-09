@@ -95,11 +95,15 @@ public class HtmlParser {
         return records;
     }
 
+    private static void printRecords(ArrayList<Record> records) {
+        for (Record record : records)
+            System.out.println(record);
+    }
+
     public static void main(String[] args) {
         String url = getUrl(args);
         ArrayList<Record> records = getRecords(url);
 
-        for (Record record : records)
-            System.out.println(record);
+        printRecords(records);
     }
 }
