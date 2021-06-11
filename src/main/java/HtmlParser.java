@@ -25,7 +25,7 @@ public class HtmlParser {
         SCANNER = new Scanner(System.in);
     }
 
-    private static int findRecord(ArrayList<Record> records, String word) {
+    public static int findRecord(ArrayList<Record> records, String word) {
         int index = 0;
 
         for (Record record : records) {
@@ -36,7 +36,7 @@ public class HtmlParser {
         return 0;
     }
 
-    private static String getUrl(String[] args) {
+    public static String getUrl(String[] args) {
         String url;
 
         if (args.length == 1)
@@ -48,7 +48,7 @@ public class HtmlParser {
         return url;
     }
 
-    private static String getSplitPattern() {
+    public static String getSplitPattern() {
         List <String> delimiters = Arrays.asList(" ", ",", ".", "! ", "?", "\"", ":", ";", "[", "]", "(", ")", "\n", "\r", "\t");
         String splitPattern = "";
         boolean isDelimiterFirst = true;
@@ -64,45 +64,47 @@ public class HtmlParser {
         return splitPattern;
     }
 
-    private static ArrayList<Record> getRecords(String url) {
+    public static Document getDocument(String url) {
+        Document htmlDocument = null;
+
+        try {
+            htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, "IOException occurred", exception);
+        }
+        return htmlDocument;
+    }
+
+    public static ArrayList<Record> getRecords(Document htmlDocument) {
         String splitPattern = getSplitPattern();
         String[] words;
         ArrayList<Record> records = new ArrayList<Record>();
+        Elements elements = htmlDocument.getAllElements();
 
-        try {
-            Document htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
-            Elements elements = htmlDocument.getAllElements();
-
-            for (Element element : elements) {
-                if (element.childNodeSize() == 1 && !element.siblingElements().isEmpty()) {
-                    words = element.text().split(splitPattern);
-                    for (String word : words) {
-                        word = word.toUpperCase();
-                        if (findRecord(records, word) == 0)
-                            records.add(new Record(word));
-                        else
-                            records.get(findRecord(records, word)).incrementCounter();
-                    }
+        for (Element element : elements) {
+            if (element.childNodeSize() == 1 && !element.siblingElements().isEmpty()) {
+                words = element.text().split(splitPattern);
+                for (String word : words) {
+                    word = word.toUpperCase();
+                    if (findRecord(records, word) == 0)
+                        records.add(new Record(word));
+                    else
+                        records.get(findRecord(records, word)).incrementCounter();
                 }
             }
-        }
-        catch (IOException exception) {
-            LOGGER.log(Level.WARNING, "IOException occurred", exception);
-        }
-        catch (Exception exception) {
-            LOGGER.log(Level.WARNING, "Exception occurred", exception);
         }
         return records;
     }
 
-    private static void printRecords(ArrayList<Record> records) {
+    public static void printRecords(ArrayList<Record> records) {
         for (Record record : records)
             System.out.println(record);
     }
 
     public static void main(String[] args) {
         String url = getUrl(args);
-        ArrayList<Record> records = getRecords(url);
+        Document htmlDocument = getDocument(url);
+        ArrayList<Record> records = getRecords(htmlDocument);
 
         printRecords(records);
     }

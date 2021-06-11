@@ -9,7 +9,7 @@ public class RecordTest {
     private Record expectedRecord;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         expectedRecord = new Record("word");
     }
 
