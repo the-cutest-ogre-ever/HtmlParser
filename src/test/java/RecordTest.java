@@ -20,19 +20,22 @@ public class RecordTest {
     }
 
     @Test
-    public void incrementCounterShouldIncrement() {
-        expectedRecord.incrementCounter();
-        Assert.assertEquals(2, expectedRecord.getCounter());
-    }
-
-    @Test
     public void equalsShouldReturnTrue() {
         Assert.assertTrue(expectedRecord.equals("word"));
+        Assert.assertTrue(expectedRecord.equals(new Record("word")));
     }
 
     @Test
     public void equalsShouldReturnFalse() {
-        Assert.assertFalse(expectedRecord.equals("another word"));
+        Record record = new Record("another word");
+        record.incrementCounter();
+        Assert.assertFalse(expectedRecord.equals(record));
+    }
+
+    @Test
+    public void incrementCounterShouldIncrement() {
+        expectedRecord.incrementCounter();
+        Assert.assertEquals(2, expectedRecord.getCounter());
     }
 
     @Test
