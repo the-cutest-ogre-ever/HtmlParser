@@ -39,7 +39,7 @@ public class HtmlParser {
     public static String getUrl(String[] args) {
         String url;
 
-        if (args.length == 1)
+        if (args.length >= 1)
             url = args[0];
         else {
             System.out.println("Enter web-page address:");
@@ -69,6 +69,8 @@ public class HtmlParser {
 
         try {
             htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
+        } catch (IllegalArgumentException exception) {
+            LOGGER.log(Level.WARNING, "IllegalArgumentException occurred", exception);
         } catch (IOException exception) {
             LOGGER.log(Level.WARNING, "IOException occurred", exception);
         }

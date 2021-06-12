@@ -18,6 +18,12 @@ public class Record {
         return false;
     }
 
+    public boolean equals(Record newRecord) {
+        if (this.word.equals(newRecord.word) && this.counter == newRecord.counter)
+            return true;
+        return false;
+    }
+
     public String getWord() {
         return word;
     }

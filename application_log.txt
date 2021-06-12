@@ -1,21 +1,15 @@
-Jun 08, 2021 2:13:35 AM HtmlParser doSomeStuff
-WARNING: SQLException occurred
-org.postgresql.util.PSQLException: No results were returned by the query.
-	at org.postgresql.jdbc.PgStatement.executeQuery(PgStatement.java:237)
-	at HtmlParser.doSomeStuff(HtmlParser.java:141)
-	at HtmlParser.main(HtmlParser.java:167)
-
-Jun 08, 2021 2:13:37 AM HtmlParser main
-WARNING: Exception occurred
-java.lang.IllegalArgumentException: Malformed URL: k
+Jun 12, 2021 8:06:19 AM HtmlParser getDocument
+WARNING: IllegalArgumentException occurred
+java.lang.IllegalArgumentException: Malformed URL: [ , ,, ., ! , ?, ", :, ;, [, ], (, ), 
 	at org.jsoup.helper.HttpConnection.url(HttpConnection.java:131)
 	at org.jsoup.helper.HttpConnection.connect(HttpConnection.java:70)
 	at org.jsoup.Jsoup.connect(Jsoup.java:73)
-	at HtmlParser.main(HtmlParser.java:178)
-Caused by: java.net.MalformedURLException: no protocol: k
+	at HtmlParser.getDocument(HtmlParser.java:71)
+	at HtmlParser.main(HtmlParser.java:109)
+Caused by: java.net.MalformedURLException: no protocol: [ , ,, ., ! , ?, ", :, ;, [, ], (, ), 
 	at java.net.URL.<init>(URL.java:611)
 	at java.net.URL.<init>(URL.java:508)
 	at java.net.URL.<init>(URL.java:457)
 	at org.jsoup.helper.HttpConnection.url(HttpConnection.java:129)
-	... 3 more
+	... 4 more
 
