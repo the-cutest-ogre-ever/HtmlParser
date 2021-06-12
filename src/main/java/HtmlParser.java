@@ -53,7 +53,6 @@ public class HtmlParser {
         String splitPattern = "";
         boolean isDelimiterFirst = true;
 
-        System.out.println("Current delimiters: " + delimiters);
         for (String delimiter : delimiters) {
             if (isDelimiterFirst) {
                 splitPattern = splitPattern.concat(delimiter);
