@@ -1,20 +1,18 @@
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class HtmlParserTest {
 
-    private String htmlText;
-    private ArrayList<Record> expectedRecords;
+    private static String htmlText;
+    private static ArrayList<Record> expectedRecords;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         htmlText =  "<html>                                     " +
                     "   <head>                                  " +
                     "       <title href=\"hh.ru/vacancy?home\"> " +
@@ -29,7 +27,7 @@ public class HtmlParserTest {
                     "       </div>                              " +
                     "   </body>                                 " +
                     "</html>                                    ";
-        expectedRecords = new ArrayList<Record>();
+        expectedRecords = new ArrayList<>();
         expectedRecords.add(new Record("ПОИСК"));
         expectedRecords.add(new Record("ВАКАНСИЙ"));
         expectedRecords.add(new Record("ВАКАНСИИ"));
@@ -40,21 +38,21 @@ public class HtmlParserTest {
 
     @Test
     public void findRecordShouldReturnCorrectNumber() {
-        Assert.assertEquals(0, HtmlParser.findRecord(expectedRecords, "ПОИСК"));
-        Assert.assertEquals(4, HtmlParser.findRecord(expectedRecords, "КОМПАНИИ"));
-        Assert.assertEquals(0, HtmlParser.findRecord(expectedRecords, "СЛОВО"));
+        Assertions.assertEquals(0, HtmlParser.findRecord(expectedRecords, "ПОИСК"));
+        Assertions.assertEquals(4, HtmlParser.findRecord(expectedRecords, "КОМПАНИИ"));
+        Assertions.assertEquals(0, HtmlParser.findRecord(expectedRecords, "СЛОВО"));
     }
 
     @Test
     public void getUrlShouldGetStringFromArgs() {
         String[] args = {"word1", "word2"};
 
-        Assert.assertEquals("word1", HtmlParser.getUrl(args));
+        Assertions.assertEquals("word1", HtmlParser.getUrl(args));
     }
 
     @Test
     public void getSplitPatternShouldReturnCorrectPattern() {
-        Assert.assertEquals(" |\\,|\\.|\\! |\\?|\\\"|\\:|\\;|\\[|\\]|\\(|\\)|\\\n" +
+        Assertions.assertEquals(" |\\,|\\.|\\! |\\?|\\\"|\\:|\\;|\\[|\\]|\\(|\\)|\\\n" +
                 "|\\\r|\\\t", HtmlParser.getSplitPattern());
     }
 
@@ -65,16 +63,16 @@ public class HtmlParserTest {
 
         if (expectedRecords.size() == records.size()) {
             for (int i = 0; i < records.size(); i++) {
-                Assert.assertTrue((expectedRecords.get(i)).equals(records.get(i)));
+                Assertions.assertTrue((expectedRecords.get(i)).equals(records.get(i)));
             }
         }
     }
 
     @Test
-    public void getDocumentShouldReturnDocument() {
+    public void getDocumentShouldReturnDocument() throws IOException {
         String url = "https://kazan.hh.ru";
 
-        Assert.assertNotNull(HtmlParser.getDocument(url));
+        Assertions.assertNotNull(HtmlParser.getDocument(url));
     }
 
 }

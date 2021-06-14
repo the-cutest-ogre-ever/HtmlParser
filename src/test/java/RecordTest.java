@@ -1,45 +1,45 @@
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class RecordTest {
 
-    private Record expectedRecord;
+    private static Record expectedRecord;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         expectedRecord = new Record("word");
     }
 
     @Test
     public void constructorShouldCreate() {
         Record record = new Record("word");
-        Assert.assertNotNull(record);
+        Assertions.assertNotNull(record);
     }
 
     @Test
     public void equalsShouldReturnTrue() {
-        Assert.assertTrue(expectedRecord.equals("word"));
-        Assert.assertTrue(expectedRecord.equals(new Record("word")));
+        Record record = new Record("word");
+
+        Assertions.assertTrue(record.equals("word"));
+        Assertions.assertTrue(record.equals(new Record("word")));
     }
 
     @Test
     public void equalsShouldReturnFalse() {
         Record record = new Record("another word");
         record.incrementCounter();
-        Assert.assertFalse(expectedRecord.equals(record));
+        Assertions.assertFalse(expectedRecord.equals(record));
     }
 
     @Test
     public void incrementCounterShouldIncrement() {
         expectedRecord.incrementCounter();
-        Assert.assertEquals(2, expectedRecord.getCounter());
+        Assertions.assertEquals(2, expectedRecord.getCounter());
     }
 
     @Test
     public void testToString() {
-        Assert.assertTrue(expectedRecord.toString().equals("word - 1"));
+        Assertions.assertEquals(expectedRecord.toString(), "word - 1");
     }
 }

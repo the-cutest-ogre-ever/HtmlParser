@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 public class HtmlParser {
 
     private static Logger LOGGER;
-    private static Scanner SCANNER;
+    private static final Scanner SCANNER;
 
     static {
         try {
@@ -63,23 +63,14 @@ public class HtmlParser {
         return splitPattern;
     }
 
-    public static Document getDocument(String url) {
-        Document htmlDocument = null;
-
-        try {
-            htmlDocument = Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
-        } catch (IllegalArgumentException exception) {
-            LOGGER.log(Level.WARNING, "IllegalArgumentException occurred", exception);
-        } catch (IOException exception) {
-            LOGGER.log(Level.WARNING, "IOException occurred", exception);
-        }
-        return htmlDocument;
+    public static Document getDocument(String url) throws IOException {
+        return Jsoup.connect(url).userAgent("Chrome/4.0.249.0").get();
     }
 
     public static ArrayList<Record> getRecords(Document htmlDocument) {
         String splitPattern = getSplitPattern();
         String[] words;
-        ArrayList<Record> records = new ArrayList<Record>();
+        ArrayList<Record> records = new ArrayList<>();
         Elements elements = htmlDocument.getAllElements();
 
         for (Element element : elements) {
@@ -103,10 +94,21 @@ public class HtmlParser {
     }
 
     public static void main(String[] args) {
-        String url = getUrl(args);
-        Document htmlDocument = getDocument(url);
-        ArrayList<Record> records = getRecords(htmlDocument);
 
-        printRecords(records);
+        Document htmlDocument = null;
+        ArrayList<Record> records;
+
+        String url = getUrl(args);
+        try {
+            htmlDocument = getDocument(url);
+        } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, "IOException occurred", exception);
+        } catch (Exception exception) {
+            LOGGER.log(Level.WARNING, "Exception occurred", exception);
+        }
+        if (htmlDocument != null) {
+            records = getRecords(htmlDocument);
+            printRecords(records);
+        }
     }
 }

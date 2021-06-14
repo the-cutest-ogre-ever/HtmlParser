@@ -13,15 +13,11 @@ public class Record {
     }
 
     public boolean equals(String newWord) {
-        if (this.word.equals(newWord))
-            return true;
-        return false;
+        return this.word.equals(newWord);
     }
 
     public boolean equals(Record newRecord) {
-        if (this.word.equals(newRecord.word) && this.counter == newRecord.counter)
-            return true;
-        return false;
+        return this.equals(newRecord.word) && (this.counter == newRecord.counter);
     }
 
     public String getWord() {
